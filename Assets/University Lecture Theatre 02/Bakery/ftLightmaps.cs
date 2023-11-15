@@ -1,5 +1,3 @@
-#define USE_TERRAINS
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,7 +46,7 @@ public class ftLightmaps {
         {
             // Try default path
             // (start with AssetDatabase assuming it's faster than GetFiles)
-            var a = AssetDatabase.LoadAssetAtPath("Assets/Bakery/ftDefaultAreaLightMat.mat", typeof(Material)) as Material;
+            var a = AssetDatabase.LoadAssetAtPath("Assets/Bakery/ftDefaultAreaLightMat.mat", typeof(Texture2D)) as Texture2D;
             if (a == null)
             {
                 // Find elsewhere
@@ -111,24 +109,9 @@ public class ftLightmaps {
         return _bakeryEditorPath;
     }
 
-    public static string GetProjectSettingsPathOld()
+    public static string GetProjectSettingsPath()
     {
         return "Assets/Settings/";
-    }
-
-    public static string GetProjectSettingsPathNew()
-    {
-        var path = GetRuntimePath();
-        for(int i=path.Length-2; i>=0; i--)
-        {
-            char c = path[i];
-            if (c == '/' || c == '\\')
-            {
-                path = path.Substring(0, i);
-                break;
-            }
-        }
-        return path + "/Settings/";
     }
 
     public static ftGlobalStorage GetGlobalStorage()
@@ -191,15 +174,8 @@ public class ftLightmaps {
     public static BakeryProjectSettings GetProjectSettings()
     {
         if (pstorage != null) return pstorage;
-        var path = GetProjectSettingsPathOld();
-        if (!Directory.Exists(path))
-        {
-            path = GetProjectSettingsPathNew();
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-        }
+        var path = GetProjectSettingsPath();
+        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
         pstorage = AssetDatabase.LoadAssetAtPath(path + "BakeryProjectSettings.asset", typeof(BakeryProjectSettings)) as BakeryProjectSettings;
         if (pstorage == null)
         {
@@ -782,7 +758,6 @@ public class ftLightmaps {
             }
         }
 
-#if USE_TERRAINS
         // Set lightmap data on terrains
         for(int i=0; i<storage.bakedRenderersTerrain.Count; i++)
         {
@@ -811,7 +786,6 @@ public class ftLightmaps {
                 }
             }
         }
-#endif
 
         // Set shadowmask parameters on lights
         for(int i=0; i<storage.bakedLights.Count; i++)
@@ -937,7 +911,6 @@ public class ftLightmaps {
             r.lightmapIndex = (id < 0 || id >= storage.idremap.Length) ? id : storage.idremap[id];
         }
 
-#if USE_TERRAINS
         Terrain r2;
         for(int i=0; i<storage.bakedRenderersTerrain.Count; i++)
         {
@@ -947,7 +920,6 @@ public class ftLightmaps {
             id = storage.bakedIDsTerrain[i];
             r2.lightmapIndex = (id < 0 || id >= storage.idremap.Length) ? id : storage.idremap[id];
         }
-#endif
 
         if (storage.anyVolumes)
         {

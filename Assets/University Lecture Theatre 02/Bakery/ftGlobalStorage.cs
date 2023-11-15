@@ -27,37 +27,6 @@ public class ftGlobalStorage : ScriptableObject
     };
 
     [System.Serializable]
-    public struct TagData
-    {
-        [SerializeField]
-        public int tag;
-
-        [SerializeField]
-        public int renderMode;
-
-        [SerializeField]
-        public int renderDirMode;
-
-        [SerializeField]
-        public int bitmask;
-
-        [SerializeField]
-        public bool computeSSS;
-
-        [SerializeField]
-        public int sssSamples;
-
-        [SerializeField]
-        public float sssDensity;
-
-        [SerializeField]
-        public Color sssColor;
-
-        [SerializeField]
-        public bool transparentSelfShadow;
-    };
-
-    [System.Serializable]
     public enum Unwrapper
     {
         Default,
@@ -242,13 +211,9 @@ public class ftGlobalStorage : ScriptableObject
     [SerializeField]
     public bool renderSettingsSamplesWarning = true;
     [SerializeField]
-    public bool renderSettingsSuppressPopups = false;
-    [SerializeField]
     public bool renderSettingsPrefabWarning = true;
     [SerializeField]
     public bool renderSettingsSplitByScene = false;
-    [SerializeField]
-    public bool renderSettingsSplitByTag = false;
     [SerializeField]
     public bool renderSettingsUVPaddingMax = false;
     [SerializeField]
@@ -290,15 +255,9 @@ public class ftGlobalStorage : ScriptableObject
     [SerializeField]
     public bool renderSettingsRTPVSceneView = false;
     [SerializeField]
-    public bool renderSettingsRTPVHDR = false;
-    [SerializeField]
     public int renderSettingsRTPVWidth = 640;
     [SerializeField]
     public int renderSettingsRTPVHeight = 360;
-
-    // Tag overrides
-    [SerializeField]
-    public List<TagData> tagOverrides = new List<TagData>();
 
     // Temp
 
@@ -306,10 +265,6 @@ public class ftGlobalStorage : ScriptableObject
     //public string modifiedMeshPaddingMapAssetName;
     public List<int> modifiedMeshPaddingArray;
     public List<int> modifiedMeshUnwrapperArray;
-
-    // For parallel import
-    public List<string> texSettingsKey;
-    public List<Vector2> texSettingsVal;
 
     public void InitModifiedMeshMap(string assetPath) {
 
@@ -361,20 +316,6 @@ public class ftGlobalStorage : ScriptableObject
         var list = modifiedAssets[id].padding;
         for(int i=0; i<list.Count; i++) s += list[i]+"_";
         return s.GetHashCode();
-    }
-
-    public TagData DefaultTagData()
-    {
-        var d = new TagData();
-        d.renderMode = 1000; // auto
-        d.renderDirMode = 1000; // auto
-        d.computeSSS = false;
-        d.sssSamples = 16;
-        d.sssDensity = 10;
-        d.sssColor = Color.white;
-        d.transparentSelfShadow = false;
-        d.bitmask = 1;
-        return d;
     }
 
 #if UNITY_2017_1_OR_NEWER
