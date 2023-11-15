@@ -1,3 +1,5 @@
+#define USE_TERRAINS
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,6 +27,7 @@ public class ftLightmapsStorage : MonoBehaviour{
             public int projMode;
             public Object cookie;
             public float angle = 30.0f;
+            public int UID;
         }
 
         public class ImplicitLightmapData
@@ -84,8 +87,10 @@ public class ftLightmapsStorage : MonoBehaviour{
         public int renderSettingsRenderDirMode = 0;
         public bool renderSettingsShowCheckerSettings = false;
         public bool renderSettingsSamplesWarning = true;
+        public bool renderSettingsSuppressPopups = false;
         public bool renderSettingsPrefabWarning = true;
         public bool renderSettingsSplitByScene = false;
+        public bool renderSettingsSplitByTag = false;
         public bool renderSettingsUVPaddingMax = false;
         public bool renderSettingsPostPacking = true;
         public bool renderSettingsHoleFilling = false;
@@ -106,6 +111,7 @@ public class ftLightmapsStorage : MonoBehaviour{
         public UnityEngine.Object renderSettingsSector = null;
         public bool renderSettingsRTPVExport = true;
         public bool renderSettingsRTPVSceneView = false;
+        public bool renderSettingsRTPVHDR = false;
         public int renderSettingsRTPVWidth = 640;
         public int renderSettingsRTPVHeight = 360;
         public int lastBakeTime = 0;
@@ -114,9 +120,9 @@ public class ftLightmapsStorage : MonoBehaviour{
         public bool enlightenWarningShown2 = false;
 
         // Light settings from the last bake
-        public List<int> lightUIDs = new List<int>();
+        public List<GameObject> uniqueLights = new List<GameObject>();
         public List<LightData> lights = new List<LightData>();
-        public Dictionary<int, LightData> lightsDict;
+        public Dictionary<GameObject, LightData> lightsDict;
 
         // List of implicit groups
         //public List<BakeryLightmapGroup> implicitGroups = new List<BakeryLightmapGroup>();
@@ -149,7 +155,7 @@ public class ftLightmapsStorage : MonoBehaviour{
         // Reuired for network bakes
         public List<string> serverGetFileList = new List<string>();
         public List<bool> lightmapHasColor = new List<bool>();
-        public List<bool> lightmapHasMask = new List<bool>();
+        public List<int> lightmapHasMask = new List<int>();
         public List<bool> lightmapHasDir = new List<bool>();
         public List<bool> lightmapHasRNM = new List<bool>();
 
@@ -162,25 +168,42 @@ public class ftLightmapsStorage : MonoBehaviour{
 
         public void Init(bool forceRefresh)
         {
-            lightsDict = new Dictionary<int, LightData>();
+            lightsDict = new Dictionary<GameObject, LightData>();
+            if (uniqueLights == null) uniqueLights = new List<GameObject>();
+            if (lights == null || uniqueLights == null)
+            {
+                forceRefresh = true;
+            }
+            else if (lights.Count != uniqueLights.Count)
+            {
+                forceRefresh = true;
+            }
+
             if (forceRefresh)
             {
                 lights = new List<LightData>();
-                lightUIDs = new List<int>();
+                uniqueLights = new List<GameObject>();
             }
             else
             {
                 for(int i=0; i<lights.Count; i++)
                 {
-                    lightsDict[lightUIDs[i]] = lights[i];
+                    if (uniqueLights[i] != null)
+                    {
+                        lightsDict[uniqueLights[i]] = lights[i];
+                    }
                 }
             }
         }
 
-        public void StoreLight(int uid, LightData light)
+        public void StoreLight(GameObject u, LightData light)
         {
-            lightUIDs.Add(uid);
+            if (uniqueLights == null) uniqueLights = new List<GameObject>();
+            if (lights == null) lights = new List<LightData>();
+            light.UID = uniqueLights.Count + 1;
+            uniqueLights.Add(u);
             lights.Add(light);
+            lightsDict[u] = light;
         }
 
         public static void CopySettings(ftLightmapsStorage src, ftLightmapsStorage dest)
@@ -236,8 +259,10 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsRenderDirMode = src.renderSettingsRenderDirMode;
             dest.renderSettingsShowCheckerSettings = src.renderSettingsShowCheckerSettings;
             dest.renderSettingsSamplesWarning = src.renderSettingsSamplesWarning;
+            dest.renderSettingsSuppressPopups = src.renderSettingsSuppressPopups;
             dest.renderSettingsPrefabWarning = src.renderSettingsPrefabWarning;
             dest.renderSettingsSplitByScene = src.renderSettingsSplitByScene;
+            dest.renderSettingsSplitByTag = src.renderSettingsSplitByTag;
             dest.renderSettingsUVPaddingMax = src.renderSettingsUVPaddingMax;
             dest.renderSettingsPostPacking = src.renderSettingsPostPacking;
             dest.renderSettingsHoleFilling = src.renderSettingsHoleFilling;
@@ -256,6 +281,7 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsCompressVolumes = src.renderSettingsCompressVolumes;
             dest.renderSettingsRTPVExport = src.renderSettingsRTPVExport;
             dest.renderSettingsRTPVSceneView = src.renderSettingsRTPVSceneView;
+            dest.renderSettingsRTPVHDR = src.renderSettingsRTPVHDR;
             dest.renderSettingsRTPVWidth = src.renderSettingsRTPVWidth;
             dest.renderSettingsRTPVHeight = src.renderSettingsRTPVHeight;
             dest.renderSettingsAtlasPacker = src.renderSettingsAtlasPacker;
@@ -315,8 +341,10 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsRenderDirMode = src.renderSettingsRenderDirMode;
             dest.renderSettingsShowCheckerSettings = src.renderSettingsShowCheckerSettings;
             dest.renderSettingsSamplesWarning = src.renderSettingsSamplesWarning;
+            dest.renderSettingsSuppressPopups = src.renderSettingsSuppressPopups;
             dest.renderSettingsPrefabWarning = src.renderSettingsPrefabWarning;
             dest.renderSettingsSplitByScene = src.renderSettingsSplitByScene;
+            dest.renderSettingsSplitByTag = src.renderSettingsSplitByTag;
             dest.renderSettingsUVPaddingMax = src.renderSettingsUVPaddingMax;
             dest.renderSettingsPostPacking = src.renderSettingsPostPacking;
             dest.renderSettingsHoleFilling = src.renderSettingsHoleFilling;
@@ -335,6 +363,7 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsCompressVolumes = src.renderSettingsCompressVolumes;
             dest.renderSettingsRTPVExport = src.renderSettingsRTPVExport;
             dest.renderSettingsRTPVSceneView = src.renderSettingsRTPVSceneView;
+            dest.renderSettingsRTPVHDR = src.renderSettingsRTPVHDR;
             dest.renderSettingsRTPVWidth = src.renderSettingsRTPVWidth;
             dest.renderSettingsRTPVHeight = src.renderSettingsRTPVHeight;
             dest.renderSettingsAtlasPacker = src.renderSettingsAtlasPacker;
@@ -394,8 +423,10 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsRenderDirMode = src.renderSettingsRenderDirMode;
             dest.renderSettingsShowCheckerSettings = src.renderSettingsShowCheckerSettings;
             dest.renderSettingsSamplesWarning = src.renderSettingsSamplesWarning;
+            dest.renderSettingsSuppressPopups = src.renderSettingsSuppressPopups;
             dest.renderSettingsPrefabWarning = src.renderSettingsPrefabWarning;
             dest.renderSettingsSplitByScene = src.renderSettingsSplitByScene;
+            dest.renderSettingsSplitByTag = src.renderSettingsSplitByTag;
             dest.renderSettingsUVPaddingMax = src.renderSettingsUVPaddingMax;
             dest.renderSettingsPostPacking = src.renderSettingsPostPacking;
             dest.renderSettingsHoleFilling = src.renderSettingsHoleFilling;
@@ -414,6 +445,7 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsCompressVolumes = src.renderSettingsCompressVolumes;
             dest.renderSettingsRTPVExport = src.renderSettingsRTPVExport;
             dest.renderSettingsRTPVSceneView = src.renderSettingsRTPVSceneView;
+            dest.renderSettingsRTPVHDR = src.renderSettingsRTPVHDR;
             dest.renderSettingsRTPVWidth = src.renderSettingsRTPVWidth;
             dest.renderSettingsRTPVHeight = src.renderSettingsRTPVHeight;
             dest.renderSettingsAtlasPacker = src.renderSettingsAtlasPacker;
@@ -444,9 +476,11 @@ public class ftLightmapsStorage : MonoBehaviour{
     public List<Light> bakedLights = new List<Light>();
     public List<int> bakedLightChannels = new List<int>();
 
+#if USE_TERRAINS
     public List<Terrain> bakedRenderersTerrain = new List<Terrain>();
     public List<int> bakedIDsTerrain = new List<int>();
     public List<Vector4> bakedScaleOffsetTerrain = new List<Vector4>();
+#endif
 
     public List<string> assetList = new List<string>();
     public List<int> uvOverlapAssetList = new List<int>(); // -1 = no UV1, 0 = no overlap, 1 = overlap
@@ -475,12 +509,15 @@ public class ftLightmapsStorage : MonoBehaviour{
         public List<int> mapsMode = new List<int>();
 
         public List<Renderer> bakedRenderers = new List<Renderer>();
-        public List<Terrain> bakedRenderersTerrain = new List<Terrain>();
         public List<int> bakedIDs = new List<int>();
-        public List<int> bakedIDsTerrain = new List<int>();
         public List<Vector4> bakedScaleOffset = new List<Vector4>();
-        public List<Vector4> bakedScaleOffsetTerrain = new List<Vector4>();
         public List<Mesh> bakedVertexColorMesh = new List<Mesh>();
+
+#if USE_TERRAINS
+        public List<Terrain> bakedRenderersTerrain = new List<Terrain>();
+        public List<int> bakedIDsTerrain = new List<int>();
+        public List<Vector4> bakedScaleOffsetTerrain = new List<Vector4>();
+#endif
 
         public List<Renderer> nonBakedRenderers = new List<Renderer>();
     }
