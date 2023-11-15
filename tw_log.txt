@@ -1,0 +1,11 @@
+[2023-11-15 오전 10:14:46] Args : C:\Program Files\Viven\client\VivenLauncher.exe
+viven://play.xspace.viven.app?d=ZHRzOi8veHNwYWNlLnZpdmVuLmFwcDo5OTk3&t=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3MDAwMTA4NTk2NDgsImxvZ2luSWQiOiJ5dW5jaGFuIiwibWJyTmFtZSI6IuycpOywrCIsIm1icklkIjoiMWIyYzZhMGQtMjJkNy00MGMyLTk4ODItMmY3MWQ2NTg0OWFjIiwibmlja25hbWUiOiJ5dW5jaGFuODgwNCJ9.ewt0NjI-WmbUoq3shPvwDtDKRb9FJ6qHCMTOG0GUQd8&s=true
+
+토큰 경과 시간 : 0
+토큰 경과 시간 : 0
+[2023-11-15 오전 10:14:46]Init Launcher..
+토큰 경과 시간 : 0
+[2023-11-15 오전 10:14:46]Init Launcher..
+[2023-11-15 오전 10:14:46]Init Launcher Done!
+[2023-11-15 오전 10:14:46]Init Launcher Done!
+토큰 경과 시간 : 0
