@@ -64,9 +64,9 @@ MonoBehaviour:
       - m_Id: bc8440f45b6b1f545a56fdeceb1ded37
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 26e8d8ea7174ab241ac57b302bd8d595
-        m_Value: C:\Users\encep\AppData\Local\Temp\/VivenSDK/
+        m_Value: "C:\\Users\\\uBCC0\uC7AC\uD604\\AppData\\Local\\Temp\\/VivenSDK/"
       - m_Id: b19a623213014344aa968485ca4927f8
-        m_Value: C:\Users\encep\AppData\Local\Temp\/VivenSDK/
+        m_Value: "C:\\Users\\\uBCC0\uC7AC\uD604\\AppData\\Local\\Temp\\/VivenSDK/"
     m_ProfileEntryNames:
     - m_Id: 25cb756816878934ea8b63b1bcd042a0
       m_Name: BuildTarget
